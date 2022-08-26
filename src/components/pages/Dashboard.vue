@@ -1,10 +1,14 @@
 <template>
 dashboard
+  <button @click="this.$store.dispatch('logout'); ">Logout</button>
 </template>
 
 <script>
 export default {
-  name: "Dashboard"
+  name: "Dashboard",
+
+  setup(){
+  }
 }
 </script>
 

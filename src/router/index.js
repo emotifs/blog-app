@@ -3,10 +3,18 @@ import TheLogin from "@/components/pages/TheLogin";
 import Dashboard from "@/components/pages/Dashboard";
 import Signup from "@/components/pages/Signup";
 import store from "@/store";
+import ProfileEdit from "@/components/pages/ProfileEdit";
 const routes = [
   {
+    path : '/',
+    redirect : '/login'
+  },
+  {
     path : '/login',
-    component : TheLogin
+    component : TheLogin,
+    meta : {
+      requiresUnAuth : true
+    }
   },
   {
     path:  '/dashboard',
@@ -18,6 +26,16 @@ const routes = [
   {
     path : '/register',
     component: Signup,
+    meta : {
+      requiresUnAuth : true
+    }
+  },
+  {
+    path : '/profile',
+    component: ProfileEdit,
+    meta : {
+      requiresAuth : true
+    }
   }
 ]
 
@@ -29,7 +47,10 @@ const router = createRouter({
 router.beforeEach(function (to, _, next){
   if(to.meta.requiresAuth && !store.getters.isAuth){
     next("/login");
-  } else{
+  } else if(to.meta.requiresUnAuth && store.getters.isAuth){
+    next('/dashboard')
+  }
+  else{
     next();
   }
 })
