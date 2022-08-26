@@ -1,6 +1,6 @@
 export default {
     state: {
-        token: null, username: "", email: "", firstname: "", lastname: ""
+        token: null, username: "", email: "", firstname: "", lastname: "", id: null
     }, getters: {
         token(state) {
             return state.token
@@ -14,6 +14,7 @@ export default {
             state.email = payload.email;
             state.firstname = payload.first_name;
             state.lastname = payload.last_name;
+            state.id = payload.id
         },
 
         updateProfile(state, payload) {
@@ -21,6 +22,7 @@ export default {
             state.email = payload.email;
             state.firstname = payload.first_name;
             state.lastname = payload.last_name;
+            state.id = payload.id
         }
     }, actions: {
         async login(context, payload) {
@@ -61,33 +63,36 @@ export default {
 
             localStorage.setItem("token", responseData.token)
 
+        },
+        async getUser(context){
             let userData;
             let headers1 = new Headers();
-            headers1.append("Authorization", `Bearer ${responseData.token}`);
+            headers1.append("Authorization", `Bearer ${localStorage.getItem('token')}`);
             headers1.append("Content-Type", "application/json")
             await fetch("http://127.0.0.1:8000/api/v1/get-user", {
-                method: "POST", headers: headers1, body: responseData.token
+                method: "POST", headers: headers1, body: localStorage.getItem('token')
             }).then(res => {
                 userData = res.json()
             });
 
             userData.then(function (res) {
                 context.commit("setUser", {
-                    token: responseData.token,
+                    token: localStorage.getItem('token'),
                     username: res.username,
                     email: res.email,
                     first_name: res.first_name,
                     last_name: res.last_name,
-
+                    id : res.id
                 });
-
                 localStorage.setItem("username", res.username)
                 localStorage.setItem("email", res.email)
                 localStorage.setItem("first_name", res.first_name)
                 localStorage.setItem("last_name", res.last_name)
+                localStorage.setItem("id", res.id)
             })
+        },
 
-        }, async updateUser(context, payload) {
+        async updateUser(context, payload) {
             let userData;
             let headers1 = new Headers();
             headers1.append("Authorization", `Bearer ${localStorage.getItem('token')}`);
@@ -100,12 +105,19 @@ export default {
                 userData = res.json();
             });
 
-            console.log(payload)
-            userData.then(
-                function(res){
-                    console.log(localStorage.getItem(res))
-                }
-            )
+            let id1 = {id : parseInt(localStorage.getItem('id'))}
+            payload = {
+                ...payload,
+                ...id1
+            }
+
+            userData.then(res => {
+                localStorage.setItem("username", res.username)
+                localStorage.setItem("email", res.email)
+                localStorage.setItem("first_name", res.first_name)
+                localStorage.setItem("last_name", res.last_name)
+                localStorage.setItem("id", res.id)
+            })
 
 
         }, logout(context) {
@@ -114,8 +126,9 @@ export default {
             localStorage.removeItem("email")
             localStorage.removeItem("first_name")
             localStorage.removeItem("last_name")
+            localStorage.removeItem("id")
             context.commit("setUser", {
-                token: null, username: "", email: "", first_name: "", last_name: "",
+                token: null, username: "", email: "", first_name: "", last_name: "", id: null,
             });
         },
     },

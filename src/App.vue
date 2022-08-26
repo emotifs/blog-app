@@ -2,6 +2,16 @@
   <router-view/>
 </template>
 
+<script>
+  export default {
+    mounted() {
+      if(this.$store.getters.isAuth){
+        this.$store.dispatch('getUser')
+      }
+    }
+  }
+</script>
+
 <style lang="scss">
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;

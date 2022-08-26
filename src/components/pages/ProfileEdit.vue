@@ -38,17 +38,23 @@ import {useStore} from "vuex";
 export default {
   name: "ProfileEdit",
   setup(){
-    const username = ref(localStorage.getItem('username'))
-    const email = ref(localStorage.getItem('email'))
-    const first_name = ref(localStorage.getItem('first_name'))
-    const last_name = ref(localStorage.getItem('last_name'))
+    const username = ref(null)
+    const email = ref(null)
+    const first_name = ref(null)
+    const last_name = ref(null)
     const store = useStore()
+    username.value = localStorage.getItem('username')
+    email.value = localStorage.getItem('email')
+    first_name.value = localStorage.getItem('first_name')
+    last_name.value = localStorage.getItem('last_name')
+
+
     const submitData = () => {
       store.dispatch('updateUser', {
-        username : username,
-        email : email,
-        first_name : first_name,
-        last_name : last_name
+        username : username.value,
+        email : email.value,
+        first_name : first_name.value,
+        last_name : last_name.value
       })
     }
 

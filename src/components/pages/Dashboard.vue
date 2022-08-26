@@ -8,7 +8,9 @@ export default {
   name: "Dashboard",
 
   setup(){
-  }
+  },
+
+
 }
 </script>
 
