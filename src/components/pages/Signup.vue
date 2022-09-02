@@ -3,10 +3,12 @@
     <div class="container">
       <div class="screen">
         <base-dialog title="No user found" :show="!!err" @close="handleError">Username or password invalid, try again!</base-dialog>
-        <base-dialog fixed :show="isLoading" title="Authicating...">
+        <base-dialog fixed :show="isLoading && !err" title="Authicating...">
           <base-spinner></base-spinner>
         </base-dialog>
         <div class="screen__content">
+          <h1 class="text-5xl font-bold mt-20">Sign up</h1>
+
           <form class="login" @submit.prevent="submitForm">
             <div class="login__field">
               <i class="login__icon fas fa-user"></i>
@@ -17,7 +19,7 @@
               <input type="password" v-model.trim="data.password" class="login__input" placeholder="Password">
             </div>
             <div>
-              <base-dialog title="Something went wrong" :show="!formIsValid" @close="handleError1">Username can't be empty or password must contain at least 8 chars</base-dialog>
+              <base-dialog title="Something went wrong" :show="!formIsValid" @close="handleError1">Username can't be empty or password must contain at least 4 chars</base-dialog>
             </div>
             <div class="" style="color : #7B77B8">
               <router-link to="/login">Already have an account, log in?</router-link>
@@ -45,6 +47,8 @@ import {reactive, ref} from "vue";
 import {useStore} from "vuex";
 import {useRouter} from "vue-router/dist/vue-router";
 import BaseDialog from "@/components/ui/BaseDialog";
+import axios from "axios";
+import {useToast} from "vue-toastification";
 
 export default {
   name: "TheLogin",
@@ -56,6 +60,7 @@ export default {
     const err = ref(null)
     const isLoading = ref(false)
     const router = useRouter()
+    const toast = useToast()
     const data = reactive({
       username: '',
       password: ''
@@ -69,29 +74,39 @@ export default {
       formIsValid.value = true
     }
 
-    const goDash = () => {
-      router.push('/dashboard')
+    const goLogin = () => {
+      router.push('/login')
     }
 
     const submitForm = async () => {
-      if(data.username === '' || data.password.length < 6){
+      if(data.username === '' || data.password.length < 4){
         formIsValid.value = false
         return
       }
 
       isLoading.value = true
 
-      try{
-        await store.dispatch('signup', {
-          username : data.username,
-          password : data.password
-        })
-        goDash();
+      const response =  await axios.post('http://127.0.0.1:8000/api/v1/user-create', data, {
+        headers : {
+          'Authorization' : "Basic bXVoYW1tYWRqb246YWRtaW4="
+        }
+      }).catch(error => {
+        err.value = error.message
+        isLoading.value = false
+      })
 
-      } catch (e){
-        err.value = e.message
+      if(response.status === 201){
+        goLogin()
+        toast.info('Now you are registered, please log in to prove that is you!')
       }
+      console.log(response)
 
+      // if(response.data.status === 'ok'){
+      //   store.commit('setToken', response.data.token)
+      //   goDash()
+      // } else{
+      //   err.value = 'Username/password incorrect'
+      // }
       isLoading.value = false
     }
 
@@ -194,8 +209,7 @@ export default {
 
 .login {
   width: 320px;
-  padding: 30px;
-  padding-top: 156px;
+  padding: 50px 30px;
 }
 
 .login__field {

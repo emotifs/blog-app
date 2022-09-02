@@ -1,27 +1,27 @@
 <template>
-    <div class="wrapper">
+    <div class="wrapper bg-white">
       <div class="form-header">
         Edit Profile
       </div>
       <form action="" @submit.prevent="submitData">
         <div class="form-grp">
           <label for="username">Username</label>
-          <input type="text" id="username" v-model="username">
+          <input type="text" id="username" v-model="data.username">
         </div>
 
         <div class="form-grp">
           <label for="email">Email</label>
-          <input type="text" v-model="email" id="email">
+          <input type="text" v-model="data.email" id="email">
         </div>
 
         <div class="form-grp">
           <label for="fname">Firstname</label>
-          <input type="text" v-model="first_name" id="fname">
+          <input type="text" v-model="data.first_name" id="fname">
         </div>
 
         <div class="form-grp">
           <label for="sname">Secondname</label>
-          <input type="text" v-model="last_name" id="snames">
+          <input type="text" v-model="data.last_name" id="snames">
         </div>
         <div class="form-grp">
           <base-button type="submit">Update profile</base-button>
@@ -33,33 +33,46 @@
 </template>
 
 <script>
-import {ref} from 'vue'
+import {reactive} from 'vue'
 import {useStore} from "vuex";
+import axios from "axios";
+import {useToast} from "vue-toastification";
+import {useRouter} from "vue-router/dist/vue-router";
 export default {
   name: "ProfileEdit",
   setup(){
-    const username = ref(null)
-    const email = ref(null)
-    const first_name = ref(null)
-    const last_name = ref(null)
+    const data = reactive({
+      username : localStorage.getItem('username'),
+      email : localStorage.getItem('email'),
+      id : localStorage.getItem('id'),
+      first_name : localStorage.getItem('first_name'),
+      last_name : localStorage.getItem('last_name')
+    })
     const store = useStore()
-    username.value = localStorage.getItem('username')
-    email.value = localStorage.getItem('email')
-    first_name.value = localStorage.getItem('first_name')
-    last_name.value = localStorage.getItem('last_name')
+    const toast = useToast()
+    const router = useRouter()
 
-
-    const submitData = () => {
-      store.dispatch('updateUser', {
-        username : username.value,
-        email : email.value,
-        first_name : first_name.value,
-        last_name : last_name.value
+    const submitData = async() => {
+      const response = await axios.put('http://127.0.0.1:8000/api/v1/user-update', data, {
+        headers : {
+          'Authorization' : 'Bearer ' + localStorage.getItem('token')
+        }
       })
+
+      if(response.status === 200){
+        toast.success('Profile updated!', { timeout: 2000 })
+        router.push('/dashboard')
+      }
+      localStorage.setItem('username', response.data.username)
+      localStorage.setItem('email', response.data.email)
+      localStorage.setItem('first_name', response.data.first_name)
+      localStorage.setItem('last_name', response.data.last_name)
+      localStorage.setItem('id', response.data.id)
+      console.log(response)
     }
 
     return {
-      username, email, first_name, last_name, submitData
+      data, submitData
     }
   }
 }
@@ -79,7 +92,7 @@ $input-padding: .75rem .875rem;
 $input-submit-bg: #2196f3;
 $input-submit-bg-hover: lighten($input-submit-bg, 5%);
 $input-submit-padding: .75rem 1.5rem;
-$body-bg: #eceff1;
+$body-bg: #fff;
 
 *, *:before, *:after {
   box-sizing: border-box;
