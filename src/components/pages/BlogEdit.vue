@@ -57,7 +57,7 @@ export default {
     async editBlog() {
       let response
       if(this.isImage){
-        const res = await axios.patch(`http://127.0.0.1:8000/api/v1/posts/${this.id}`, {
+        const res = await axios.patch(`/posts/${this.id}`, {
               body: this.body,
               title: this.title,
               image: this.image
@@ -71,7 +71,7 @@ export default {
         response = res
 
       } else{
-        const res = await axios.patch(`http://127.0.0.1:8000/api/v1/posts/${this.id}`, {
+        const res = await axios.patch(`/posts/${this.id}`, {
               body: this.body,
               title: this.title,
             },
@@ -84,19 +84,18 @@ export default {
         response = res
       }
 
-      if (response.status === 201) {
+      if (response.status === 201 || response.status === 200) {
         this.body = ''
         this.title = ''
         this.image = ''
         this.$router.push('/blogs')
-        toast.success('Your post was added!')
       }
       console.log(response)
     }
   },
   async mounted() {
     this.isLoading = true
-    const response = await axios.get('http://127.0.0.1:8000/api/v1/posts/', {
+    const response = await axios.get('/posts/', {
       headers: {
         'Authorization': 'Basic bXVoYW1tYWRqb246YWRtaW4='
       }

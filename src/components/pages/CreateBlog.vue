@@ -32,7 +32,7 @@ export default {
     }
 
     const addBlog = async () => {
-      const response = await axios.post('http://127.0.0.1:8000/api/v1/posts/', {
+      const response = await axios.post('/posts/', {
         body : body.value,
         title : title.value,
         image : image.value

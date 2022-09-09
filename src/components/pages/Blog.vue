@@ -1,11 +1,11 @@
 <template>
   <router-link :to="linkPost">
     <div class="blog-card text-left mt-5">
-      <div class="flex">
-        <div style="width: 67%" class="mr-4">
+      <div class="flex" style="width: 100%">
+        <div style="width: 60%">
           <p class="text-left text-sm font-bold my-3">Written by <span class="text-white p-2 rounded-2xl" style="background-color: rgb(164,122,211)">{{post.author}}</span></p>
           <div>
-            <h1 class="text-2xl font-bold">{{post.title}}</h1>
+            <h1 class="text-2xl font-bold">{{postTitle}}</h1>
           </div>
           <div class="my-2">
             <p>{{postBody}}</p>
@@ -42,7 +42,14 @@ export default {
   },
   computed : {
     postBody(){
-      return this.post.body.slice(0, 50) + ' ...'
+      return this.post.body.slice(0,50) + ' ...'
+    },
+    postTitle(){
+      if( this.post.title.length > 50){
+        return this.post.title.slice(0, 50) + '...'
+      }
+      return this.post.title.slice(0, 50)
+
     },
     linkPost(){
       return 'blogs/' + this.post.id
@@ -62,7 +69,5 @@ export default {
 </script>
 
 <style scoped lang="scss">
-  .blog-card{
-    width: 60%;
-  }
+
 </style>

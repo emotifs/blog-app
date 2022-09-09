@@ -53,7 +53,7 @@ export default {
     const router = useRouter()
 
     const submitData = async() => {
-      const response = await axios.put('http://127.0.0.1:8000/api/v1/user-update', data, {
+      const response = await axios.put('/user-update', data, {
         headers : {
           'Authorization' : 'Bearer ' + localStorage.getItem('token')
         }

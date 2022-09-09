@@ -1,6 +1,6 @@
 <template>
   <header>
-    <nav class="container">
+    <nav class="container mb-12">
       <div class="branding">
         <router-link class="header" to="/dashboard">Blogs</router-link>
       </div>

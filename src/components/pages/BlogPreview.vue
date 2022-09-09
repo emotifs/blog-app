@@ -18,7 +18,7 @@
         <button class="p-3 text-white rounded absolute right-0" v-if="this.$route.path.toString()[this.$route.path.toString().length -1]  !== 't'" style="background-color: rgb(164,122,211)" @click="this.$router.push(this.$route.path + '/add-comment')">Add Comment</button>
       </div>
       <router-view :id="post.id"></router-view>
-      <div v-for="comment in post.comments">
+      <div v-for="comment in comments">
         <div class="flex my-4">
           <div class="flex-shrink-0 mr-3 previewImg">
             {{ comment.user.slice(0, 2).toUpperCase()   }}
@@ -45,13 +45,14 @@ export default {
   data(){
     return{
       post :[],
+      comments : [],
       liked : false
     }
   },
 
   methods : {
     async like() {
-      const response = await axios.post('http://127.0.0.1:8000/api/v1/post-like/', {
+      const response = await axios.post('/post-like/', {
         post : this.id,
         action : 'like'
       }, {
@@ -66,7 +67,7 @@ export default {
       console.log(response)
     },
     async unlike() {
-      const response = await axios.post('http://127.0.0.1:8000/api/v1/post-like/', {
+      const response = await axios.post('/post-like/', {
         post : this.id,
         action : 'unlike'
       }, {
@@ -82,9 +83,9 @@ export default {
     }
   },
   async mounted() {
-    const response = await axios.get('http://127.0.0.1:8000/api/v1/posts/', {
+    const response = await axios.get('/posts/', {
       headers: {
-        'Authorization': 'Basic bXVoYW1tYWRqb246YWRtaW4='
+        'Authorization' : 'Bearer ' + localStorage.getItem('token')
       }
     })
 
@@ -92,7 +93,16 @@ export default {
     let singlePost = response.data.results
     singlePost = singlePost.filter(res => res.id === parseInt(this.id))
     this.post = singlePost
-    console.log(singlePost)
+    console.log(singlePost[0])
+    console.log(singlePost[0].is_liked)
+
+    const response1 = await axios.get(`/comments/?post=${this.id}`, {
+      headers: {
+        'Authorization' : "Basic bXVoYW1tYWRqb246YWRtaW4="
+      }
+    })
+
+    this.comments = response1.data.results
   },
 
   computed : {

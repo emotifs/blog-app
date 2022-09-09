@@ -84,7 +84,7 @@ export default {
 
       isLoading.value = true
 
-     const response =  await axios.post('http://127.0.0.1:8000/api/v1/user-login', data, {
+     const response =  await axios.post('/user-login', data, {
        headers : {
          'Authorization' : "Basic bXVoYW1tYWRqb246YWRtaW4="
        }

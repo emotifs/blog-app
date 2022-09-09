@@ -11,7 +11,7 @@ import Toast, { POSITION } from "vue-toastification";
 import "vue-toastification/dist/index.css";
 const app = createApp(App)
 
-
+axios.defaults.baseURL = 'http://127.0.0.1:8000/api/v1'
 app.use(store).use(router, axios);
 app.use(Toast, {
     position : POSITION.TOP_RIGHT

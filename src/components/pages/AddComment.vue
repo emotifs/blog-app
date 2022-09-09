@@ -19,7 +19,7 @@ export default {
   },
   methods : {
     addComment(){
-      const response = axios.post('http://127.0.0.1:8000/api/v1/comments/', {
+      const response = axios.post('/comments/', {
         is_active : true,
         body : this.body,
         "post" : this.id
@@ -28,7 +28,8 @@ export default {
           'Authorization' : 'Bearer ' + localStorage.getItem('token')
         }
       })
-      console.log(response)
+      this.$router.push('/blogs/' + this.id)
+      window.location.reload()
     }
   }
 }
